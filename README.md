@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+## react 学习笔记
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### 项目初始化操作
++ 暴露配置文件 命令：
+```
+  npm run eject
+```
++ 配置路径别名： webpack.config.js
+```js
+ alias: {
+        "@": paths.appSrc
+}
+```
+### 配置代理路径
++ 在src 目录新建setupProxy.js 文件
++ 安装配置依赖
+```
+npm install http-proxy-middleware
+```
++ 在setupProxy.js写入
+```js
+const { createProxyMiddleware } = require("http-proxy-middleware")
+module.exports = function (app) {
+  app.use(
+      createProxyMiddleware("/api", {
+        target: "http://localhost:8089",
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": ""
+        }
+      })
+  )
+}
+```
+### jsx 基本语法
++ react 中只会渲染 string、number、数组类型。渲染数组类型时会把数组每一项都进行渲染
++ 渲染其他类型时控制台会报错，null，undefined，Boolean类型不会报错，但页面不会显示
 
-## Available Scripts
+### 函数式组件传递props
++ 可以对传递的prop赋值默认值
+```js
+Dome01.defaultProps = {
+  childName: "default val"
+}
+```
++ 安装 prop-types 插件可实现对传递值的限制
+```js
+Dome01.propTypes = {
+  childName: PropTypes.string,
+  childTitle: PropTypes.string.isRequired,
+  childAge: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+}
+```
++ props 值不可修改和扩展 是使用Object.freeze()方法冻结传递给组件的 props 对象
+```js
+// 冻结对象 不可劫持、修改、删除、新增
+Object.freeze()
 
-In the project directory, you can run:
+// 密封对象 可修改，不可删除、新增、不可劫持
+Object.seal()
 
-### `npm start`
+// 不可扩展对象
+Object.preventExtensions()
+```
++ 如果想要修改props中的值可以使用如下方法
+```js
+import React, { useState } from 'react';
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+function MyComponent(props) {
+  const [name, setName] = useState(props.name);
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+  const handleClick = () => {
+    setName('new name');
+  };
 
-### `npm test`
+  return (
+    <div>
+      <p>Name: {name}</p>
+      <button onClick={handleClick}>Change Name</button>
+    </div>
+  );
+}
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+export default MyComponent;
+```
