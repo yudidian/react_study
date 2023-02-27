@@ -231,7 +231,8 @@ class MyComponent extends Component {
             this.setState({
               count: this.state.count++
             })
-          }}>增加</button>
+          }}>增加
+          </button>
         </div>
     );
   }
@@ -239,8 +240,11 @@ class MyComponent extends Component {
 
 export default MyComponent;
 ```
+
 ### React.Component 与 React.PureComponent 区别
-+ React.PureComponent 通过实现 shouldComponentUpdate() 方法来自动对比前后两次渲染的props和state是否有变化，从而自动决定是否需要重新渲染组件，而 React.Component 不会自动做出这个决定。
+
++ React.PureComponent 通过实现 shouldComponentUpdate() 方法来自动对比前后两次渲染的props和state是否有变化，从而自动决定是否需要重新渲染组件，而
+  React.Component 不会自动做出这个决定。
 + 若在React.PureComponent重写shouldComponentUpdate()方法会报错
 + React.PureComponent 是通过浅比较来判断是否需要重新渲染，当地址没有改变，数据改变时组件不会重新渲染
 + 下列中是数据改变地址没变，导致组件没有重新渲染
@@ -264,14 +268,17 @@ export default MyComponent;
 + 或者使用this.forceUpdate()强制刷新
 
 ### react 获取Dom对象
+
 + 类组件中获取Dom对象
-+ 不推荐使用this.refs获取实例对象
+    + 不推荐使用this.refs获取实例对象
+
 ```jsx
 class ClassGetRef extends react.PureComponent {
   constructor(props) {
     super(props);
     this.three = react.createRef()
   }
+
   componentDidMount() {
     console.log(this.refs.first)
     console.log(this.tow)
@@ -279,7 +286,7 @@ class ClassGetRef extends react.PureComponent {
   }
 
   render() {
-    return(
+    return (
         <>
           <div title="方式一" ref="first">通过this.refs获取</div>
           <div title="方式二" ref={x => this.tow = x}>通过回调函数</div>
@@ -289,4 +296,191 @@ class ClassGetRef extends react.PureComponent {
   }
 }
 ```
-+ 
+
++ 函数式组件获取DOM
+
+```jsx
+import react, {useState, useRef, useEffect, forwardRef, useImperativeHandle} from 'react'
+
+export const FunGetRef = forwardRef(function (props, ref) {
+  const myEl = useRef()
+  const [count, setCount] = useState(0)
+  useImperativeHandle(ref, () => ({
+    setElement(val) {
+      return setCount(val)
+    },
+    getElement() {
+      return count
+    }
+  }))
+  useEffect(() => {
+    console.log(myEl.current)
+  })
+  return (
+      <>
+        <div title="函数式组件获取ref" ref={myEl}>函数式组件获取ref</div>
+        <p>{count}</p>
+        <button onClick={() => {
+          setCount((val) => {
+            return val + 1
+          })
+        }}>增加
+        </button>
+      </>
+  )
+})
+```
+
+### setState额外知识
+
++ setState 第二个参数是一个回调函数会在视图更新完成之后吊起
+
+  ```jsx
+  <button onClick={() => {
+    this.setState({
+      val: val + 1
+    }, () => {
+      console.log("callback")
+      this.inputElement.focus()
+    })
+  }}>改变值后获取焦点</button>
+  ```
+  ![img.png](./effectPicture/Dome05.png)
++ setState 更新机制
+    + 更新是异步更新
+    + 会将所有setState放进一个更新队列中
+    + 在后面统一调用该队列
+    + 如果想要立即执行可以使用flushSync进行刷新
+  ```jsx
+  import react from "react";
+  
+  class Dome06 extends react.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        x: 0,
+        y: 10,
+        z: 20
+      }
+    }
+    render() {
+      console.log("render")
+      const {x, y, z} = this.state
+      const change = () => {
+        this.setState({x: x + 1})
+        this.setState({y: y + 1})
+        this.setState({z: z + 1})
+        console.log(this.state)
+      }
+      return (
+          <>
+            <div>setState更新机制</div>
+            <p>x:{x}，y:{y}，z:{z}</p>
+            <button onClick={() => change()}>改变值后获取焦点</button>
+          </>
+      )
+    }
+  }
+  ```
+### react 中的合成事件
++ react中使用到的如onclick、onchange 等事件都是合成事件
++ 使用合成事件是为了更好的兼容
++ 对于当前事件对象如果要使用是放在传递参数的最后一个的
+```jsx
+class Dome07 extends react.Component {
+  change1(x, event) {
+    console.log(this)
+    console.log(event, x)
+  }
+  render() {
+    const change2 = function (event) {
+      console.log(this)
+      console.log(event)
+    }
+    const change3 = (event) => {
+      console.log(this)
+      console.log(event)
+    }
+    return (
+        <>
+          <button onClick={this.change1.bind(this, 10)}>按钮一</button>
+          <br/>
+          <button onClick={change2}>按钮二</button>
+          <br/>
+          <button onClick={change3}>按钮三</button>
+          <br/>
+        </>
+    )
+  }
+}
+```
+### react 中事件绑定机制
++ 绑定机制是通过事件委托实现的
++ 并不是在dom元素上直接添加
++ 事件委托实例
+```jsx
+import react from "react";
+import "@/style/Dome09.scss"
+class Dome09 extends react.Component {
+  render() {
+    const root = () => {
+      console.log("root：冒泡阶段")
+    }
+    const rootCapture = (ev) => {
+      console.log("rootCapture：捕获阶段")
+    }
+    const prent = () => {
+      console.log("prent：冒泡阶段")
+    }
+    const prentCapture = () => {
+      console.log("prentCapture：捕获阶段")
+    }
+    const child = () => {
+      console.log("child：冒泡阶段")
+    }
+    const childCapture = () => {
+      console.log("childCapture：捕获阶段")
+    }
+    return(
+        <>
+          <div className="root" onClick={root} onClickCapture={rootCapture}>
+            <div className="prent" onClick={prent} onClickCapture={prentCapture}>
+              <div className="child" onClick={child} onClickCapture={childCapture}></div>
+            </div>
+          </div>
+
+        </>
+    )
+  }
+}
+const root = document.getElementById("root")
+
+const body = document.querySelector("body")
+root.addEventListener("click", function (ev) {
+  console.log("#root事件捕获阶段")
+}, true)
+
+
+root.addEventListener("click", function (ev) {
+  console.log("#root事件冒泡阶段")
+})
+
+body.addEventListener("click", function (ev) {
+  console.log("body事件捕获阶段")
+}, true)
+
+
+body.addEventListener("click", function (ev) {
+  console.log("body事件冒泡阶段")
+})
+export default Dome09
+```
++ 为何会出现下列情况
+  + react17 以后事件是通过#root 元素进行派发
+  + 代码中只对root、body 进行了原生的事件绑定，所以出现图中效果
+![img.png](img.png)
++ addEventListener 第三个参数默认为false，如果设置为true表名在捕获阶段触发事件
++ 因为react实现绑定事件就是通过事件委托来实现的所以在对多个子元素进行绑定事件时不需要在用事件委托
++ vue 中就是对dom元素直接进行事件的添加，所以对多个子元素进行绑定时需要进行事件委托来优化
+
+### TaskDome 实战

@@ -1,8 +1,9 @@
-import {ClassGetRef} from "./views/Dome/Dome04";
+import TaskDome from "./views/TaskDome/TaskDome.jsx";
+
 function App() {
   return (
     <div className="App">
-      <ClassGetRef />
+      <TaskDome />
     </div>
   );
 }

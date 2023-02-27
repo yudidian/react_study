@@ -1,0 +1,21 @@
+.root{
+  width: 400px;
+  height: 400px;
+  background-color: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .prent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background-color: burlywood;
+    .child{
+      width: 100px;
+      height: 100px;
+      background-color: #1ae542;
+    }
+  }
+}
