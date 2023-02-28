@@ -382,16 +382,20 @@ export const FunGetRef = forwardRef(function (props, ref) {
     }
   }
   ```
+
 ### react 中的合成事件
+
 + react中使用到的如onclick、onchange 等事件都是合成事件
 + 使用合成事件是为了更好的兼容
 + 对于当前事件对象如果要使用是放在传递参数的最后一个的
+
 ```jsx
 class Dome07 extends react.Component {
   change1(x, event) {
     console.log(this)
     console.log(event, x)
   }
+
   render() {
     const change2 = function (event) {
       console.log(this)
@@ -414,13 +418,17 @@ class Dome07 extends react.Component {
   }
 }
 ```
+
 ### react 中事件绑定机制
+
 + 绑定机制是通过事件委托实现的
 + 并不是在dom元素上直接添加
 + 事件委托实例
+
 ```jsx
 import react from "react";
 import "@/style/Dome09.scss"
+
 class Dome09 extends react.Component {
   render() {
     const root = () => {
@@ -441,7 +449,7 @@ class Dome09 extends react.Component {
     const childCapture = () => {
       console.log("childCapture：捕获阶段")
     }
-    return(
+    return (
         <>
           <div className="root" onClick={root} onClickCapture={rootCapture}>
             <div className="prent" onClick={prent} onClickCapture={prentCapture}>
@@ -453,6 +461,7 @@ class Dome09 extends react.Component {
     )
   }
 }
+
 const root = document.getElementById("root")
 
 const body = document.querySelector("body")
@@ -475,12 +484,112 @@ body.addEventListener("click", function (ev) {
 })
 export default Dome09
 ```
+
 + 为何会出现下列情况
-  + react17 以后事件是通过#root 元素进行派发
-  + 代码中只对root、body 进行了原生的事件绑定，所以出现图中效果
-![img.png](img.png)
+    + react17 以后事件是通过#root 元素进行派发
+    + 代码中只对root、body 进行了原生的事件绑定，所以出现图中效果
+      ![img.png](img.png)
 + addEventListener 第三个参数默认为false，如果设置为true表名在捕获阶段触发事件
 + 因为react实现绑定事件就是通过事件委托来实现的所以在对多个子元素进行绑定事件时不需要在用事件委托
 + vue 中就是对dom元素直接进行事件的添加，所以对多个子元素进行绑定时需要进行事件委托来优化
 
 ### TaskDome 实战
+
++ 已完成
+
+## **hooks**函数
+
+### useState
+
++ 使函数式组件具有状态，类似于类组件中的setState
++ 实现原理让函数重新执行使其形成闭包。
++ 一次只能管理一个状态，要管理多个使用多个useState或者使用解构。
++ 异步批量执行。
++ 可使用flushSync 强制刷新。
++ 性能方面useState通过Object.is来比较新老状态值，相同则跳过视图重新渲染。
++ 惰性初始state 如果state的初始值很计算量很复杂，且就首次会计算，为了避免这种情况发生可在useState中传递一个函数，函数只会才初始化的时候调用一次。
+
+```jsx
+import {useState} from "react";
+import {Button} from "antd";
+import {flushSync} from "react-dom"
+
+const Dome10 = function (props) {
+  const [sup, setSup] = useState(0),
+      [noSup, setNoSup] = useState(0)
+  return (
+      <>
+        <header>总人数：{sup + noSup}</header>
+        <div>
+          <span>支持人数{sup}</span>
+          <Button type={"primary"} onClick={() => {
+            setSup(sup + 1)
+          }}>增加</Button>
+        </div>
+        <div>
+          <span>反对人数{noSup}</span>
+          <Button type={"primary"} onClick={() => {
+            setNoSup(noSup + 1)
+          }}>增加</Button>
+        </div>
+      </>
+  )
+}
+
+export default Dome10
+```
+
+### useEffect
+
++ 在组件第一次渲染完成 或者组件每一次更新完成都会调用
+
+```jsx
+useEffect(() => {
+  console.log("componentDidMount")
+})
+```
+
++ 在组件第一次渲染完成时会调用
+
+```jsx
+useEffect(() => {
+  console.log("componentDidMount")
+}, [])
+```
+
++ 在组件第一次渲染完成时或者依赖的状态发生改变
+
+```jsx
+useEffect(() => {
+  console.log("componentDidMount && 依赖的状态发生改变")
+}, [x])
+```
+
++ 返回的函数将在 组件卸载后 被调用 等同于 componentWillUnmount
+
+```jsx
+useEffect(() => {
+  return () => {
+    console.log('componentWillUnmount');
+  };
+}, []);
+```
+
++ 只能在函数最外层调用Hook 不能再判断，循环中调用Hook
++ 使用useEffect 获取异步数据
+
+```jsx
+useEffect(() => {
+  console.log("componentDidMount")
+  // 获取异步数据
+  const sendGetTaskList = async () => {
+    const res = await getTackList({
+      limit: 100,
+      page: 1,
+      state: 0
+    })
+    setData(res.list)
+  }
+  sendGetTaskList()
+}, [])
+```

@@ -222,7 +222,7 @@ class TaskDome extends react.Component {
                   name="text"
                   rules={[{ required: true, message: '请输入任务描述' }]}
               >
-                <Input.TextArea />
+                <Input.TextArea row={4} autoSize={{ minRows: 3, maxRows: 5 }}/>
               </Form.Item>
 
               <Form.Item

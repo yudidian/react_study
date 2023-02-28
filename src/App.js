@@ -1,9 +1,9 @@
-import TaskDome from "./views/TaskDome/TaskDome.jsx";
+import Dome11 from "./views/Dome/Dome11";
 
 function App() {
   return (
     <div className="App">
-      <TaskDome />
+      <Dome11 />
     </div>
   );
 }
