@@ -579,6 +579,7 @@ useEffect(() => {
 + 使用useEffect 获取异步数据
 
 ```jsx
+// 不能直接对useEffect函数使用async 修饰可以通过.then 或者函数调用的方式
 useEffect(() => {
   console.log("componentDidMount")
   // 获取异步数据
@@ -592,4 +593,40 @@ useEffect(() => {
   }
   sendGetTaskList()
 }, [])
+```
+### useLayoutEffect
++ 功能同useEffect大致相同
++ 区别useLayoutEffect阻塞浏览器渲染DOM
+
+### useRef
++ 获取DOM实例
++ createRef 也可以获取DOM实例与useRef有如下区别
+  + useRef 获取的dom实例不会随dom更新而变化，createRef获取的DOM实例每一次都是最新的
+```jsx
+import React, {useEffect, useRef, useState} from "react";
+let copy_box1 = null
+let copy_box2 = null
+export default function Dome12() {
+  const box1 = useRef(null)
+  const box2 = React.createRef()
+  const [num, setNum] = useState(0)
+
+  useEffect(() => {
+    if (!copy_box1 && !copy_box2) {
+      copy_box1 = box1
+      copy_box2 = box2
+    }
+    console.log(box1 === copy_box1)
+    console.log(box2 === copy_box2)
+  })
+  return (
+      <>
+        <div>
+          <span ref={box1} onClick={() => {setNum(num+1)}}>span1 : {num}</span>
+          <span ref={box2}>span2</span>
+        </div>
+
+      </>
+  )
+};
 ```

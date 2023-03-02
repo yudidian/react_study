@@ -1,9 +1,9 @@
-import Dome11 from "./views/Dome/Dome11";
+import TaskHooks from "@/views/TaskHooks/TaskDome";
 
 function App() {
   return (
     <div className="App">
-      <Dome11 />
+      <TaskHooks />
     </div>
   );
 }
