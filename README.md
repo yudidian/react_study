@@ -594,16 +594,21 @@ useEffect(() => {
   sendGetTaskList()
 }, [])
 ```
+
 ### useLayoutEffect
+
 + 功能同useEffect大致相同
 + 区别useLayoutEffect阻塞浏览器渲染DOM
 
 ### useRef
+
 + 获取DOM实例
 + createRef 也可以获取DOM实例与useRef有如下区别
-  + useRef 获取的dom实例不会随dom更新而变化，createRef获取的DOM实例每一次都是最新的
+    + useRef 获取的dom实例不会随dom更新而变化，createRef获取的DOM实例每一次都是最新的
+
 ```jsx
 import React, {useEffect, useRef, useState} from "react";
+
 let copy_box1 = null
 let copy_box2 = null
 export default function Dome12() {
@@ -622,11 +627,196 @@ export default function Dome12() {
   return (
       <>
         <div>
-          <span ref={box1} onClick={() => {setNum(num+1)}}>span1 : {num}</span>
+          <span ref={box1} onClick={() => {
+            setNum(num + 1)
+          }}>span1 : {num}</span>
           <span ref={box2}>span2</span>
         </div>
 
       </>
   )
 };
+```
+
+### useEffect 使用细节
+
++ 将Task用函数式组件重写
++ 可用于页面首次渲染发送请求
++ 若是像taskHooks中，请求数据依赖于某个数据应该将将其填入依赖
++ 后续index改变，getListInfo中index也会是最新的index，从而获取的数据也是最新的
+
+```jsx
+useEffect(() => {
+  getListInfo({
+    limit: 100,
+    page: 1,
+    state: index
+  })
+}, [index])
+```
+
+### useMemo
+
++ 主要作用缓存
++ 性能优化
++ 函数式组件每一次setXX是都会重新渲染
++ 就算依赖值没有发生改变，函数重新渲染时还是会重新执行一遍
++ useMemo 会进行缓存，并且只有在依赖发生改变时才会重新执行
+
+```jsx
+const percent = useMemo(() => {
+  console.log("重新计算")
+  return (sup / (sup + protest) * 100).toFixed(2) + "%"
+}, [sup, protest])
+```
+
+### useCallback
+
++ 用户返回一个固定地址值的函数
++ 可用作性能优化
++ 可像useMemo一样，填入依赖，只有依赖发生改变时，函数地址才会发生改变
++ **合理使用**
+
+```jsx
+const Child2 = react.memo(function (props) {
+  console.log("render")
+  const {handle} = props
+  handle()
+  if (!pre) {
+    pre = handle
+  }
+  console.log("判断重新渲染的出的handle是否相同", handle === pre)
+  return (
+      <>
+        <div>child</div>
+      </>
+  )
+})
+
+
+const Dome16 = function (props) {
+  const [num, setNum] = useState(0)
+  const handle = useCallback(() => {
+    console.log("handle函数")
+  }, [])
+  return (
+      <>
+        <Child2 handle={handle}></Child2>
+        <div>num：{num}</div>
+        <div>
+          <button onClick={() => {
+            setNum(num + 1)
+          }}>change
+          </button>
+        </div>
+      </>
+  )
+}
+export default Dome16
+```
+
+### react.memo()
+
++ 作用创建类似于PurComponent组件效果
++ 若是props中值没有发生改变则不会触发渲染
++ 比较props中是进行的浅比较
+
+### 复合组件通讯
+
++ 父传子
+
+```jsx
+<VoteMain supNum={supNum} oppNum={oppNum}/>
+```
+
++ 子传父通过事件传递（与vue大致相同）
+
+```jsx
+<VoteFooter change={this.change}/>
+// 其中type就是子传递给父的数据，和vue大致相同
+change = type => {
+  let {supNum, oppNum} = this.state;
+  if (type === 'sup') {
+    this.setState({supNum: supNum + 1});
+    return;
+  }
+  this.setState({oppNum: oppNum + 1});
+};
+//================================
+// 子组件内部，其中sup就是传递的值
+<button onClick={change.bind(null, 'sup')}>支持</button>
+```
+
+### react 上下文对象context
+
++ 类似于vue provider inject
++ 改变多级父 -> 子 实现 爷-> 孙
++ 改变多级props传递
++ 创建context
+
+```jsx
+import React from "react";
+
+const ThemeContext = React.createContext()
+export default ThemeContext
+```
+
++ 类组件中使用方法
+
+```jsx
+class Parent extends react.Component {
+  static contextType = ThemeContext
+
+  constructor(props) {
+    super(props);
+    console.log(this)
+  }
+
+  render() {
+    const {parentAge} = this.context
+    return (
+        <>
+          <p>parentAge: {parentAge}</p>
+          <div>
+            <Son></Son>
+          </div>
+        </>
+    )
+  }
+}
+```
+
++ 函数式组件中使用 (useContext)
+
+```jsx
+const Parent = function (props) {
+  const contextType = useContext(ThemeContext)
+
+  const {parentAge} = contextType
+  return (
+      <>
+        <p>parentAge: {parentAge}</p>
+        <div>
+          <Son></Son>
+        </div>
+      </>
+  )
+}
+```
+
++ 类组件、函数组件定义context方式都一致
+
+```jsx
+<ThemeContext.Provider value={
+  {
+    grandAge,
+    parentAge,
+    sonAge
+  }
+}>
+  <p>grandAge: {grandAge}</p>
+  <p>parentAge: {parentAge}</p>
+  <p>sonAge: {sonAge}</p>
+  <Parent/>
+</ThemeContext.Provider>
 ```

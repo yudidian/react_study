@@ -1,9 +1,9 @@
-import TaskHooks from "@/views/TaskHooks/TaskDome";
+import Grand from "@/views/DomeContextClass/grand";
 
 function App() {
   return (
     <div className="App">
-      <TaskHooks />
+      <Grand />
     </div>
   );
 }
