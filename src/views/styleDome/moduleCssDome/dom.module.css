@@ -1,0 +1,23 @@
+.grand{
+    width: 400px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: red;
+}
+
+.grand .parent {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1df593;
+}
+
+.grand .parent .son {
+    width: 200px;
+    height: 200px;
+    background-color: aquamarine;
+}

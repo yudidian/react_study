@@ -820,3 +820,134 @@ const Parent = function (props) {
   <Parent/>
 </ThemeContext.Provider>
 ```
+
+### React样式的处理方案
+
+#### style 样式内联
+
++ 优点
+    + 使用简单： 简单的以组件为中心来实现样式的添加
+    + 扩展方便： 通过使用对象进行样式设置，可以方便的扩展对象来扩展样式
+    + 避免冲突： 最终都编译为元素的行内样式，不存在样式冲突的问题
++ 缺点
+    + 不能使用伪类： 这意味着 :hover、:focus、:actived、:visited 等都将无法使用
+    + 不能使用媒体查询： 媒体查询相关的属性不能使用
+    + 减低代码可读性： 如果使用很多的样式，代码的可读性将大大降低
+    + 没有代码提示： 当使用对象来定义样式时，是没有代码提示的
+
+#### module.css
+
+```jsx
+import style from '@/views/styleDome/moduleCssDome/dom.module.css'
+
+const ModuleCssDome = function (props) {
+  return (
+      <>
+        <div className={style.grand}>
+          <div className={style.parent}>
+            <div className={style.son}></div>
+          </div>
+        </div>
+      </>
+  )
+}
+export default ModuleCssDome
+```
+
+#### react-jss
+
++ 安装 npm i react-jss
++ 创建样式createUseStyle 返回一个hook函数， 类组件中不能直接使用
++ 可在使用hooks函数时进行传参
++ & 符作用与less sass 中相同
+
+```jsx
+import {createUseStyles} from "react-jss"
+
+const useStyle = createUseStyles({
+  grand: (props) => {
+    return {
+      width: `${props.maxSize}px`,
+      height: "400px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "red"
+    }
+  },
+  son: (props) => {
+    return {
+      width: `${props.minSize}px`,
+      height: "200px",
+      backgroundColor: "aquamarine",
+      "&:hover": {
+        backgroundColor: "red"
+      }
+    }
+  },
+  parent: {
+    width: "300px",
+    height: "300px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#1df593"
+  }
+})
+
+const ReactJssDome = function (props) {
+  const style = useStyle({
+    maxSize: 400,
+    minSize: 200
+  })
+  return (
+      <>
+        <div className={style.grand}>
+          <div className={style.parent}>
+            <div className={style.son}></div>
+          </div>
+        </div>
+      </>
+  )
+}
+```
+### styled-components
++ 安装 npm install styled-components
++ 引入 styled 
++ style.div 对应的就是div
++ 可通过 props => {} 动态指定样式
+```jsx
+import styled from "styled-components";
+
+
+export const VoteBox = styled.div`
+  width: 400px;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ec4848;
+
+  .parent {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1df593;
+
+    .son {
+      width: 200px;
+      height: 200px;
+      background-color: aquamarine;
+    }
+  }
+`
+export const SonColor = styled.span`
+  color: ${props => {
+    return props.num % 2 === 0 ? "#e79595": "#1df593"
+  }};
+  font-size: 20px;
+  font-weight: 900;
+`
+```
