@@ -951,3 +951,10 @@ export const SonColor = styled.span`
   font-weight: 900;
 `
 ```
+### redux
++ 状态管理器（类似vueX)
++ redux 工作流程
+  + 创建全局store，包含初始state，修改state的reducer
+  + 不能直接修改state，修改需要在reducer 中进行
+  + 获取state 可通过getState 获取state 值
+  + 组件内部可通过dispatch 通知reducer 修改state中值

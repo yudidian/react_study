@@ -1,9 +1,9 @@
-import HOCDome from "@/views/styleDome/HOC/HOCDome";
+import Vote from "@/views/redux/reduxDome01/Vote";
 
 function App() {
   return (
     <div className="App">
-      <HOCDome />
+      <Vote />
     </div>
   );
 }
