@@ -4,7 +4,6 @@ export const cloneDeep = function (obj) {
   }
   const type = Array.isArray(obj) ? [] : {}
   for (const objKey in obj) {
-    console.log(objKey)
     if (obj.hasOwnProperty(objKey)) {
       type[objKey] = cloneDeep(obj[objKey])
     }

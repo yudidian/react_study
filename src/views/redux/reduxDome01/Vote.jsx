@@ -5,12 +5,18 @@ import ThemeContext from "@/utils/context";
 
 const Vote = function (props) {
   const {store} = useContext(ThemeContext)
+
   const [_, setRandDom] = useState(0)
-  const {supNum, oppNum} = store.getState()
+  const {supNum, oppNum} = store.getState().vote
   useEffect(() => {
-    store.subscribe(() => {
+    console.log("componentDidMount")
+    const unsubscribe = store.subscribe(() => {
       setRandDom(Math.random())
     })
+    return () => {
+      console.log("组件销毁")
+      unsubscribe()
+    }
   }, [])
   return (
       <>

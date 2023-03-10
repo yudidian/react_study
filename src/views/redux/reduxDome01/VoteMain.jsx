@@ -3,7 +3,7 @@ import ThemeContext from "@/utils/context";
 
 const VoteMain = function (props) {
   const {store} = useContext(ThemeContext)
-  const {supNum, oppNum} = store.getState()
+  const {supNum, oppNum} = store.getState().vote
   let total = supNum + oppNum,
       ratio = '--';
   if (total > 0){

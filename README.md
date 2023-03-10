@@ -911,11 +911,14 @@ const ReactJssDome = function (props) {
   )
 }
 ```
+
 ### styled-components
+
 + 安装 npm install styled-components
-+ 引入 styled 
++ 引入 styled
 + style.div 对应的就是div
 + 可通过 props => {} 动态指定样式
+
 ```jsx
 import styled from "styled-components";
 
@@ -945,16 +948,101 @@ export const VoteBox = styled.div`
 `
 export const SonColor = styled.span`
   color: ${props => {
-    return props.num % 2 === 0 ? "#e79595": "#1df593"
-  }};
+  return props.num % 2 === 0 ? "#e79595" : "#1df593"
+}};
   font-size: 20px;
   font-weight: 900;
 `
 ```
+
 ### redux
+
 + 状态管理器（类似vueX)
 + redux 工作流程
-  + 创建全局store，包含初始state，修改state的reducer
-  + 不能直接修改state，修改需要在reducer 中进行
-  + 获取state 可通过getState 获取state 值
-  + 组件内部可通过dispatch 通知reducer 修改state中值
+    + 创建全局store，包含初始state，修改state的reducer
+    + 不能直接修改state，修改需要在reducer 中进行
+    + 获取state 可通过getState 获取state 值
+    + 组件内部可通过dispatch 通知reducer 修改state中值 实现统一管理
++ redux 工程化
+    + store 文件夹下创建index.js 文件 设置reducer
+    + reducer 中 需要深克隆一下state 值， 目的为了只在最后才修改原始state值
+    + 按照模块 给每个模块创建reducer
+    + 合并所有reducer
+    + 赋值给index.js 中 createStore
++ combineReducers 合并各个模块的reducer
+
+```jsx
+import voteReducer from "@/views/store/reducers/voteReducer"
+import personReducer from "@/views/store/reducers/personReducer";
+
+const reducers = combineReducers({
+  vote: voteReducer,
+  person: personReducer
+})
+```
+
++ 此时reducers 为：
+
+```jsx
+state = {
+  vote: {
+    oppNum: 10,
+    supNum: 10
+  },
+  person: {
+    age: 10
+  }
+}
+```
+
++ 只需要修改获取store里状态值的方法
++ dispatch 不需要修改
+
+```jsx
+const {oppNum} = store.getState().vote
+```
+
++ 创建actionsType.js 文件统一管理type
+
+```jsx
+export const OPP_NUM = "OPP_NUM"
+export const SUP_NUM = "SUP_NUM"
+export const CHANGE_AGE = "CHANGE_AGE"
+```
+
++ 创建action 管理容器，对各个模块dispatch 进行统一管理
+
+```jsx
+import voteActions from "@/views/store/actions/voteActions";
+
+import personActions from "@/views/store/actions/personActions";
+
+const actions = {
+  vote: voteActions,
+  person: personActions
+}
+
+export default actions
+```
+
++ vote 模块actions
+
+```jsx
+import {OPP_NUM, SUP_NUM} from "@/views/store/actionsTypes";
+
+const voteActions = {
+  support(value) {
+    return {
+      type: SUP_NUM,
+      payload: value
+    }
+  },
+  oppose(value) {
+    return {
+      type: OPP_NUM,
+      payload: value
+    }
+  }
+}
+export default voteActions
+```
