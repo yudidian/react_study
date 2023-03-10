@@ -1,4 +1,4 @@
-import Vote from "@/views/redux/reduxDome01/Vote";
+import Vote from "@/views/redux/react-redux-dome/Vote";
 
 function App() {
   return (

@@ -6,16 +6,16 @@ const initial = {
   supNum: 0
 }
 
-export default function (state = initial, action) {
+export default function voteReducer(state = initial, action) {
   state = cloneDeep(state)
 
   switch (action.type) {
     case OPP_NUM: {
-      state.oppNum += 1
+      state.oppNum = action.payload
       break
     }
     case SUP_NUM: {
-      state.supNum += 1
+      state.supNum = action.payload
       break
     }
     default: {

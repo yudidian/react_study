@@ -5,17 +5,15 @@ import reportWebVitals from './reportWebVitals';
 import zhCN from 'antd/locale/zh_CN';
 import { ConfigProvider } from 'antd';
 import 'antd/dist/reset.css';
-import ThemeContext from "@/utils/context";
+import {Provider} from "react-redux"
 import store from "@/views/store";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-   <ThemeContext.Provider value={{
-     store
-   }}>
+   <Provider store={store}>
      <ConfigProvider locale={zhCN}>
        <App />
      </ConfigProvider>
-   </ThemeContext.Provider>
+   </Provider>
 );
 
 reportWebVitals();

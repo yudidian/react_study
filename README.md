@@ -1046,3 +1046,42 @@ const voteActions = {
 }
 export default voteActions
 ```
+
+### react-redux
+
++ 简化redux操作
++ 内部会自动创建全局上下文对象
++ 使用时通过connect 传递
++ connect 中有两个参数，第一个为全局的store， 第二个为dispatch
++ 参数二有两种写法：如下
++ 使用时一般使用 react-redux + redux
+
+```jsx
+export default connect(store => {
+  return {
+    supNum: store.vote.supNum,
+    oppNum: store.vote.oppNum
+  }
+}, actions.vote)(VoteFooter);
+```
+
+```jsx
+export default connect(store => {
+  return {
+    supNum: store.vote.supNum,
+    oppNum: store.vote.oppNum
+  }
+}, dispatch => {
+  return {
+    support(val) {
+      dispatch(actions.vote.support(val))
+    },
+    oppose(val) {
+      dispatch(actions.vote.oppose(val))
+    }
+  }
+})(VoteFooter);
+```
+
+###  mobX
+ 
