@@ -8,7 +8,7 @@ const initial = {
 
 export default function voteReducer(state = initial, action) {
   state = cloneDeep(state)
-
+  console.log("voteReducer")
   switch (action.type) {
     case OPP_NUM: {
       state.oppNum = action.payload

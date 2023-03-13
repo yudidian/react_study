@@ -969,6 +969,10 @@ export const SonColor = styled.span`
     + 按照模块 给每个模块创建reducer
     + 合并所有reducer
     + 赋值给index.js 中 createStore
++ redux 优化
+    + redux 每一次dispatch 都会 将事件池中的函数全部执行一遍
+    + 可以将组件销毁时 将对应事件移除事件池
+    + 配合路由使用时，大部分都会销毁
 + combineReducers 合并各个模块的reducer
 
 ```jsx
@@ -1003,6 +1007,7 @@ const {oppNum} = store.getState().vote
 ```
 
 + 创建actionsType.js 文件统一管理type
+  + 不会造成 type 值冲突
 
 ```jsx
 export const OPP_NUM = "OPP_NUM"
@@ -1083,5 +1088,24 @@ export default connect(store => {
 })(VoteFooter);
 ```
 
-###  mobX
+###  actions 中异步操作
++ 引入 redux applyMiddleware
++ redux-logger 每一次dispatch 会进行日志打印
++ redux-thunk dispatch 进行异步操作 需要手动dispatch
++ redux-promise dispatch 进行异步操作 自动dispatch
+```jsx
+import {createStore, applyMiddleware} from "redux"
+import reducers from "@/views/store/reducers";
+import reduxLogger from "redux-logger"
+import reduxThunk from "redux-thunk"
+import reduxPromise from "redux-promise"
+
+const store = createStore(reducers, applyMiddleware(reduxLogger, reduxThunk, reduxPromise))
+export default store
+```
  
+### redux-thunk redux-promise 异同
++ 两者都是处理actions 中的异步操作
++ 两者都重写了dispatch 方法， 只有在第二次dispatch才是使用的 redux 中的dispatch
++ **redux-thunk** 返回的是一个 一个函数 需要 手动dispatch 
++ **redux-promise** 则是与不使用中间件写法一致，内部自动dispatch
