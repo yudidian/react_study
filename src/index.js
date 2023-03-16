@@ -6,7 +6,7 @@ import zhCN from 'antd/locale/zh_CN';
 import { ConfigProvider } from 'antd';
 import 'antd/dist/reset.css';
 import {Provider} from "react-redux"
-import store from "@/views/store";
+import store from "@/views/storeTookit";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
    <Provider store={store}>

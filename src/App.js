@@ -1,9 +1,9 @@
-import TaskDome from "@/views/TaskRedux/TaskDome";
+import TaskHooks from "@/views/TaskReduxTookit/TaskDome";
 
 function App() {
   return (
     <div className="App">
-      <TaskDome />
+      <TaskHooks />
     </div>
   );
 }

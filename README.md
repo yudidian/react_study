@@ -1007,7 +1007,7 @@ const {oppNum} = store.getState().vote
 ```
 
 + 创建actionsType.js 文件统一管理type
-  + 不会造成 type 值冲突
+    + 不会造成 type 值冲突
 
 ```jsx
 export const OPP_NUM = "OPP_NUM"
@@ -1088,11 +1088,13 @@ export default connect(store => {
 })(VoteFooter);
 ```
 
-###  actions 中异步操作
+### actions 中异步操作
+
 + 引入 redux applyMiddleware
 + redux-logger 每一次dispatch 会进行日志打印
 + redux-thunk dispatch 进行异步操作 需要手动dispatch
 + redux-promise dispatch 进行异步操作 自动dispatch
+
 ```jsx
 import {createStore, applyMiddleware} from "redux"
 import reducers from "@/views/store/reducers";
@@ -1103,9 +1105,129 @@ import reduxPromise from "redux-promise"
 const store = createStore(reducers, applyMiddleware(reduxLogger, reduxThunk, reduxPromise))
 export default store
 ```
- 
+
 ### redux-thunk redux-promise 异同
+
 + 两者都是处理actions 中的异步操作
 + 两者都重写了dispatch 方法， 只有在第二次dispatch才是使用的 redux 中的dispatch
-+ **redux-thunk** 返回的是一个 一个函数 需要 手动dispatch 
++ **redux-thunk** 返回的是一个 一个函数 需要 手动dispatch
 + **redux-promise** 则是与不使用中间件写法一致，内部自动dispatch
+
+### Redux Toolkit
+
++ 简化redux 操作
++ 不用在写type
++ reducer 功能与之前一样都是用来修改state 状态
++ middleware 中间件配置， 一旦配置了该属性需要自己设置redux-thunk
++ 配置store 还是使用react-redux 中 Provider
+
+```jsx
+import {configureStore} from "@reduxjs/toolkit"
+import taskSlice from "@/views/storeTookit/features/taskSlice";
+import reduxLogger from "redux-logger"
+import reduxThunk from "redux-thunk"
+import reduxPromise from "redux-promise"
+
+export default configureStore({
+  reducer: {
+    task: taskSlice
+  },
+  middleware: [reduxLogger, reduxThunk, reduxPromise]
+})
+```
+
+### redux-toolkit reducer 写法
+
++ 创建文件夹 features
++ 创建各个模块的切片 列：taskSlice.js
++ 使用createSlice 创建slice
++ name--唯一id，initialState--初始状态值，reducers--改变state的方法
++ 其中reducers 方法名字和 actions 中方法名称一致
++ actions 中 派发的数据存储在payload中
+
+```jsx
+import {createSlice} from "@reduxjs/toolkit"
+import {getTackList} from "@/api/TaskDome";
+
+const taskSlice = createSlice({
+  name: "taskSlice",
+  initialState: {
+    taskList: null
+  },
+  reducers: {
+    sendGetTaskList(state, action) {
+      const {list} = action.payload
+      state.taskList = list
+    },
+    delTaskList(state, action) {
+      state.taskList = state.taskList.filter(item => {
+        return item.id !== action.payload.id
+      })
+    },
+    updateTaskState(state, action) {
+      const {id, type} = action.payload
+      for (const item of state.taskList) {
+        if (item.id === id) {
+          item.state = type
+          break
+        }
+      }
+    }
+  }
+})
+const {sendGetTaskList, delTaskList, updateTaskState} = taskSlice.actions
+const getTaskListAsync = (params) => {
+  return async dispatch => {
+    let list = []
+    const res = await getTackList(params)
+    if (res.code === 0) {
+      list = res.list
+    }
+    dispatch(sendGetTaskList({list}))
+  }
+}
+export {getTaskListAsync, delTaskList, updateTaskState}
+export default taskSlice.reducer
+```
+
+### taskSlice 在模块中使用
+
++ import {useSelector, useDispatch} from "react-redux";
++ 导入 useSelector， useDispatch
++ useSelector获取store 中的状态值
+    + 语法 const {xxx} = useSelector(store=>store.task)
+    + 其中task 是在configureStore 中reducers 中定义的
++ useDispatch 获取派发对象
+    + 使用 const dispatch = useDispatch()
+    + dispatch(delTaskList({}))
+
+## 对象规则
+
+### 获取对象规则
+
++ Object.getOwnPropertyDescriptor()
+  + configurable: 是否可删除
+  + enumerable: 是否可枚举
+  + writable: 是否可修改值
+
+### 设置对象规则
++ Object.defineProperty(obj, "key",{options})
++ 若是obj 中不存在key 设置规则默认都是false
+```js
+const obj = {
+  x: 1
+}
+
+Object.defineProperty(obj, "x", {
+  configurable: false,
+  enumerable: false,
+  writable: false
+})
+
+Object.defineProperty(obj, "y", {
+  configurable: false,
+  enumerable: false,
+  writable: false
+})
+```
+### 装饰器
