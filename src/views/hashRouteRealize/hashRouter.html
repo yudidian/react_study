@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<nav class="nav-box">
+  <a href="#/">首页</a>
+  <a href="#/product">产品中心</a>
+  <a href="#/personal">个人中心</a>
+</nav>
+<div class="view-box"></div>
+</body>
+<script>
+  // 路由容器
+  const viewBox = document.querySelector('.view-box');
+  // 路由表
+  const routes = [{
+    path: '/',
+    component: '首页内容',
+    meta: {
+      title: "首页内容"
+    }
+  }, {
+    path: '/product',
+    component: '产品中心内容',
+    meta: {
+      title: "产品中心内容"
+    }
+  }, {
+    path: '/personal',
+    component: '个人中心内容',
+    meta: {
+      title: "个人中心内容"
+    }
+  }];
+
+  // 页面一加载，我们设置默认的hash值
+  location.hash = '/';
+
+  // 路由匹配的方法
+  const routerMatch = function routerMatch() {
+    console.log(location.hash)
+    let hash = location.hash.substring(1),
+        text = "";
+    routes.forEach(route => {
+      if (route.path === hash) {
+        text = route.component;
+        document.title = route.meta.title
+      }
+    });
+    viewBox.innerHTML = text;
+  };
+  routerMatch();
+  window.addEventListener('hashchange', routerMatch);
+</script>
+</html>

@@ -12,7 +12,6 @@ const TaskHooks = function (props) {
   const formEL = useRef(null)
   const dispatch = useDispatch()
   let {taskList} = useSelector(store => store.task)
-  console.log(taskList)
   const columns = [
     {
       title: '编号',

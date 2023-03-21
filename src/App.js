@@ -1,9 +1,9 @@
-import TaskHooks from "@/views/TaskReduxTookit/TaskDome";
+import Layout from "@/views/RouterDome_V6";
 
 function App() {
   return (
     <div className="App">
-      <TaskHooks />
+      <Layout></Layout>
     </div>
   );
 }

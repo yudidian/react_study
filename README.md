@@ -1206,13 +1206,15 @@ export default taskSlice.reducer
 ### 获取对象规则
 
 + Object.getOwnPropertyDescriptor()
-  + configurable: 是否可删除
-  + enumerable: 是否可枚举
-  + writable: 是否可修改值
+    + configurable: 是否可删除
+    + enumerable: 是否可枚举
+    + writable: 是否可修改值
 
 ### 设置对象规则
+
 + Object.defineProperty(obj, "key",{options})
 + 若是obj 中不存在key 设置规则默认都是false
+
 ```js
 const obj = {
   x: 1
@@ -1230,4 +1232,96 @@ Object.defineProperty(obj, "y", {
   writable: false
 })
 ```
+
 ### 装饰器
+
+### mobx
+
+### react-router-dom
+
+#### 路由分类
+
++ hash路由
+    + 监听hashchange 事件对页面改变做出对应事件
+    + 改变hash值实现内容改变
++ history路由
+    + 通过h5 中新增对象history实现
+    + 监听popstate 事件 pushState replaceState 事件不会触发popstate 事件
+    + 若是路由不存在会报404错误
+
+#### V5 版本 react-router-dom
+
++ BrowserRouter 创建history 路由
++ HashRouter 创建hash 路由
++ Link <Link to="/">A</Link>
++ Route <Route path="/b" component={DomeB}></Route>
++ Switch 路由开启精准匹配
+    + exact 指定某个路由开启精准匹配
+
+```jsx
+  <Route exact path="/" component={DomeA}></Route>
+```
+
++ Redirect 重定向
+    + to 前往的路由地址
+    + from 从何处来
+    + exact 是否精准匹配
+
+```jsx
+<Redirect to="/" from="" exact></Redirect>
+```
+
++ 路由懒加载
+    + lazy => lazy(() => import('@/views/RouterDome/DomeC'))
+    + Suspense => 懒加载路由必须使用该组件包裹
+        + fallback 加载时展示的内容
+        + ```jsx
+      <Suspense fallback={<>加载中。。。</>}>
+      <Component></Component> // 懒加载组件
+      </Suspense>
+      ```
+    + webpackChunkName: "Name" => 指定 打包名称
+        + 每个懒加载路由单独打包成一个js 文件，如果需要合并几个懒加载路由则指定打包名称即可
+        + ```jsx
+      import(/*webpackChunkName: "Name"*/'@/views/RouterDome/A1/ChildA')
+      ```
++ 路由表构建
+    + 重定向选项
+        + redirect:true
+        + from:从哪来
+        + to:定向的地址
+        + exact:精准匹配
+    + 正常选项
+        + path:匹配路径
+        + name:路由名称
+        + component:需要渲染的组件
+        + meta:路由元信息
+        + exact:精准匹配
++ NavLink 和Link 区别
+    + 两者都是导航式路由
+    + 唯一区别 NavLink 会在 选择中是添加一个className = “active”
++ 路由传参
+  + 三种方式params， query， state（隐式传参）
+  + props 中可以得到三个信息 history、location、match（前提historyRouter，bowerRouter包裹下）
+    + history 主要用于编程导航跳转
+      + pathname: 路由名称
+      + search：query参数
+      + state：隐式传递参数，刷新会消失
+    + location：获取query字符串 需要手动处理变为对象
+    + match：获取params参数
+#### V6 版本 react-router-dom
+
++ 移除switch，默认都是精准匹配
++ 移除Redirect 使用 Navigate 代替
++ 新增Routes Route 必须使用Routes包裹
++ 多级路由需要写在统一的Routes 中
++ Route 中的 component 改名 为element
++ props 中已经移除 history match location 属性 需要使用hook函数获取
++ 移除 useHistory 跳转使用 useNavigate 代替
+
+### 路由传参
+1. useHistory 使用 useNavigate 代替 useNavigate("pathname", {search: ""})
+2. 获取query参数可以使用useLocation、useSearchParams 获取
+3. 获取params参数使用useParams 直接获取到对象
+4. 隐式传参 useNavigate("path",{state: ""})
+5. 隐式传参 state 与5版本不同的是 刷新后state值还是存在
